@@ -154,6 +154,7 @@ static void handleclient(u64 conn_s_p)
 	int connactive = 1; // whether the ftp connection is active or not
 	int dataactive = 0; // prevent the data connection from being closed at the end of the loop
 	int loggedin = 0; // whether the user is logged in or not
+	//int anonymous = 0; // whether the user is logged in or not
 	
 	char user[32]; // stores the username that the user entered
 	char rnfr[256]; // stores the path/to/file for the RNFR command
@@ -691,9 +692,9 @@ static void handleclient(u64 conn_s_p)
 					else
 					if(strcasecmp(cmd, "HELP") == 0)
 					{
-						ssend(conn_s, "214-Special OpenPS3FTP commands:\r\n");
+						ssend(conn_s, "214-Special OpenFTP commands:\r\n");
 						ssend(conn_s, " SITE PASSWD <newpassword> - Change your password\r\n");
-						ssend(conn_s, " SITE EXITAPP - Remotely quit OpenPS3FTP\r\n");
+						ssend(conn_s, " SITE EXITAPP - Remotely quit OpenFTP\r\n");
 						ssend(conn_s, " SITE HELP - Show this message\r\n");
 						ssend(conn_s, "214 End\r\n");
 					}
@@ -727,7 +728,7 @@ static void handleclient(u64 conn_s_p)
 					else
 					if(strcasecmp(cmd, "EXITAPP") == 0)
 					{
-						ssend(conn_s, "221 Exiting OpenPS3FTP\r\n");
+						ssend(conn_s, "221 Exiting OpenFTP\r\n");
 						exitapp = 1;
 					}
 					else
@@ -995,11 +996,17 @@ static void handleclient(u64 conn_s_p)
 			{
 				if(split == 1)
 				{
-					if((disablepass == 1) || (strcmp(D_USER, user) == 0 && strcmp(userpass, param) == 0))
+					if(strcmp(D_USER, user) == 0 && strcmp(userpass, param) == 0)
 					{
 						ssend(conn_s, "230 Welcome !\r\n");
 						loggedin = 1;
 					}
+					/*else if(disablepass == 1)
+					{
+						ssend(conn_s, "230 Welcome !\r\n");
+						loggedin = 1;
+						anonymous = 1;
+					}*/
 					else
 					{
 						ssend(conn_s, "430 Invalid username or password\r\n");
@@ -1056,6 +1063,7 @@ int main()
 	//initialize pad
 	PadInfo padinfo;
 	PadData paddata;
+	ioPadInit(7);
 	int i;
 	
 	// initialize libnet
@@ -1085,7 +1093,6 @@ int main()
 	
 	// prepare for screen printing
 	init_screen();
-	ioPadInit(7);
 	sconsoleInit(FONT_COLOR_BLACK, FONT_COLOR_WHITE, res.width, res.height);
 	
 	// start listening for connections
@@ -1152,15 +1159,17 @@ int main()
 					}
 					if(paddata.BTN_SQUARE)
 					{
-						if(disablepass == 0) //disable password - not doing anything just now
+						if(disablepass == 0) //enable anonymous
 						{
 							disablepass = 1;
-							strcpy(status, "Successfully disabled password.");
+							strcpy(status, "Successfully enabled anonymous.");
 						}
-						else //enable password - not doing anything just now
+						else //disable anonymous and kill connections
 						{
 							disablepass = 0;
-							strcpy(status, "Successfully enabled password.");
+							/*if(anonymous == 1)
+								connactive = 0;*/
+							strcpy(status, "Successfully disabled anonymous.");
 						}
 						
 						sleep(1);
@@ -1184,18 +1193,18 @@ int main()
 			
 			if(rwflash == 0)
 			{
-				print(50, 280, "Press CIRCLE to mount writable flash as dev_rwflash.", buffers[currentBuffer]->ptr);
+				print(50, 300, "Press CIRCLE to mount writable flash as dev_rwflash.", buffers[currentBuffer]->ptr);
 			}
 			else
 			{
 				print(50, 200, "Warning: A writable flash is mounted. Be careful while accessing it !", buffers[currentBuffer]->ptr);
-				print(50, 280, "Press CIRCLE to unmount writable flash.", buffers[currentBuffer]->ptr);
+				print(50, 300, "Press CIRCLE to unmount writable flash.", buffers[currentBuffer]->ptr);
 			}
 			
 			if(disablepass == 0)
-				print(50, 310, "Press SQUARE to disable password.", buffers[currentBuffer]->ptr);
+				print(50, 350, "Press SQUARE to enable anonymous.", buffers[currentBuffer]->ptr);
 			else
-				print(50, 310, "Press SQUARE to enable password.", buffers[currentBuffer]->ptr);
+				print(50, 350, "Press SQUARE to disable anonymous.", buffers[currentBuffer]->ptr);
 			
 		}
 		

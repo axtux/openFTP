@@ -1,4 +1,4 @@
-//    FTP Server by @jjolano
+//    FTP Server by @jjolano and @Axtux
 
 const char* VERSION = "1.5b";	// used in the welcome message and displayed on-screen
 
@@ -179,7 +179,7 @@ static void handleclient(u64 conn_s_p)
 	strcpy(cwd, "/");
 	
 	// welcome message
-	sprintf(buffer, "220 FTP Server %s by @jjolano\r\n", VERSION);
+	sprintf(buffer, "220 FTP Server %s by @jjolano and @Axtux\r\n", VERSION);
 	ssend(conn_s, buffer);
 	
 	while(exitapp == 0 && recv(conn_s, buffer, 1023, 0) > 0 && connactive == 1)
@@ -1074,8 +1074,8 @@ int main()
 	int error;
 	
 	// format version string
-	char infos[32], status[128];
-	sprintf(infos, "FTP Server %s by @jjolano", VERSION);
+	char infos[128], status[128];
+	sprintf(infos, "FTP Server %s by @jjolano and @Axtux", VERSION);
 	strcpy(status, "");
 	
 	// load password file
@@ -1170,7 +1170,7 @@ int main()
 								connactive = 0;
 								loggedin = 0;
 							}//*/
-							strcpy(status, "Successfully disabled anonymous (not current users).");
+							strcpy(status, "Successfully disabled anonymous.");
 						}
 						
 						sleep(1);
@@ -1186,16 +1186,16 @@ int main()
 				}
 			}
    			
-			print(50, 20, infos, buffers[currentBuffer]->ptr);
-			print(100, 70, ipport, buffers[currentBuffer]->ptr);
-			print(50, 170, status, buffers[currentBuffer]->ptr);
+			print(50, 50, infos, buffers[currentBuffer]->ptr);
+			print(100, 100, ipport, buffers[currentBuffer]->ptr);
+			print(50, 200, status, buffers[currentBuffer]->ptr);
 			
 			if(rwflash != 0)
-				print(50, 220, "Be careful with the writable flash !", buffers[currentBuffer]->ptr);
+				print(50, 250, "Be careful with the writable flash !", buffers[currentBuffer]->ptr);
 			
-			print(100, 320, "Press CROSS to quit the application.", buffers[currentBuffer]->ptr);
-			print(100, 350, (rwflash == 0) ? "Press CIRCLE to mount writable flash." : "Press CIRCLE to unmount writable flash.", buffers[currentBuffer]->ptr);
-			print(100, 380, (disablepass == 0) ? "Press SQUARE to enable anonymous." : "Press SQUARE to disable anonymous.", buffers[currentBuffer]->ptr);
+			print(100, 350, "Press CROSS to quit the application.", buffers[currentBuffer]->ptr);
+			print(100, 380, (rwflash == 0) ? "Press CIRCLE to mount writable flash." : "Press CIRCLE to unmount writable flash.", buffers[currentBuffer]->ptr);
+			print(100, 410, (disablepass == 0) ? "Press SQUARE to enable anonymous." : "Press SQUARE to disable anonymous.", buffers[currentBuffer]->ptr);
 		}
 		
 		flip(currentBuffer);

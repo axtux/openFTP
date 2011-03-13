@@ -35,7 +35,8 @@ char userpass[64] = D_PASS;
 char ipport[128];
 
 int exitapp = 0;
-int disablepass = 0;
+int disablepass = 0; // whether the password is disabled or not
+int anonymous = 0; // whether the user is logged in as anonymous or not
 int xmbopen = 0;
 int currentBuffer = 0;
 
@@ -154,7 +155,6 @@ static void handleclient(u64 conn_s_p)
 	int connactive = 1; // whether the ftp connection is active or not
 	int dataactive = 0; // prevent the data connection from being closed at the end of the loop
 	int loggedin = 0; // whether the user is logged in or not
-	//int anonymous = 0; // whether the user is logged in or not
 	
 	char user[32]; // stores the username that the user entered
 	char rnfr[256]; // stores the path/to/file for the RNFR command
@@ -182,7 +182,7 @@ static void handleclient(u64 conn_s_p)
 	sprintf(buffer, "220 FTP Server %s by @jjolano\r\n", VERSION);
 	ssend(conn_s, buffer);
 	
-	while(exitapp == 0 && connactive == 1 && recv(conn_s, buffer, 1023, 0) > 0)
+	while(exitapp == 0 && recv(conn_s, buffer, 1023, 0) > 0 && connactive == 1)
 	{
 		// get rid of the newline at the end of the string
 		buffer[strcspn(buffer, "\n")] = '\0';
@@ -858,7 +858,7 @@ static void handleclient(u64 conn_s_p)
 			else
 			if(strcasecmp(cmd, "QUIT") == 0 || strcasecmp(cmd, "BYE") == 0)
 			{
-				ssend(conn_s, "221 Bye!\r\n");
+				ssend(conn_s, "221 Bye !\r\n");
 				connactive = 0;
 			}
 			else
@@ -996,17 +996,14 @@ static void handleclient(u64 conn_s_p)
 			{
 				if(split == 1)
 				{
-					if(strcmp(D_USER, user) == 0 && strcmp(userpass, param) == 0)
+					if(disablepass == 1 || (strcmp(D_USER, user) == 0 && strcmp(userpass, param) == 0))
 					{
 						ssend(conn_s, "230 Welcome !\r\n");
 						loggedin = 1;
+						
+						if(strcmp(D_USER, user) != 0 || strcmp(userpass, param) != 0)
+							anonymous = 1;
 					}
-					/*else if(disablepass == 1)
-					{
-						ssend(conn_s, "230 Welcome !\r\n");
-						loggedin = 1;
-						anonymous = 1;
-					}*/
 					else
 					{
 						ssend(conn_s, "430 Invalid username or password\r\n");
@@ -1126,11 +1123,11 @@ int main()
 							if(lv2FsMount(DEV_FLASH1, FS_FAT32, "/dev_rwflash", 0) == 0)
 							{
 								rwflash = 1;
-								strcpy(status, "Successfully mounted writable flash as dev_rwflash.");
+								strcpy(status, "Successfully mounted writable flash.");
 							}
 							else
 							{
-								strcpy(status, "An error occured while mounting writable flash as dev_rwflash.");
+								strcpy(status, "Error while mounting writable flash.");
 							}
 						}
 						else //Unmount writable flash
@@ -1151,7 +1148,7 @@ int main()
 							}
 							else
 							{
-								strcpy(status, "An error occured while unmounting writable flash.");
+								strcpy(status, "Error while unmounting writable flash.");
 							}
 						}
 						
@@ -1164,12 +1161,16 @@ int main()
 							disablepass = 1;
 							strcpy(status, "Successfully enabled anonymous.");
 						}
-						else //disable anonymous and kill connections
+						else //disable anonymous and kill connections (not for now)
 						{
 							disablepass = 0;
-							/*if(anonymous == 1)
-								connactive = 0;*/
-							strcpy(status, "Successfully disabled anonymous.");
+							/*
+							if(anonymous == 1)
+							{
+								connactive = 0;
+								loggedin = 0;
+							}//*/
+							strcpy(status, "Successfully disabled anonymous (not current users).");
 						}
 						
 						sleep(1);
@@ -1185,27 +1186,16 @@ int main()
 				}
 			}
    			
-			print(50, 50, infos, buffers[currentBuffer]->ptr);
-			print(50, 100, ipport, buffers[currentBuffer]->ptr);
-			print(50, 150, status, buffers[currentBuffer]->ptr);
+			print(50, 20, infos, buffers[currentBuffer]->ptr);
+			print(100, 70, ipport, buffers[currentBuffer]->ptr);
+			print(50, 170, status, buffers[currentBuffer]->ptr);
 			
-			print(50, 250, "Press CROSS to quit the application.", buffers[currentBuffer]->ptr);
+			if(rwflash != 0)
+				print(50, 220, "Be careful with the writable flash !", buffers[currentBuffer]->ptr);
 			
-			if(rwflash == 0)
-			{
-				print(50, 300, "Press CIRCLE to mount writable flash as dev_rwflash.", buffers[currentBuffer]->ptr);
-			}
-			else
-			{
-				print(50, 200, "Warning: A writable flash is mounted. Be careful while accessing it !", buffers[currentBuffer]->ptr);
-				print(50, 300, "Press CIRCLE to unmount writable flash.", buffers[currentBuffer]->ptr);
-			}
-			
-			if(disablepass == 0)
-				print(50, 350, "Press SQUARE to enable anonymous.", buffers[currentBuffer]->ptr);
-			else
-				print(50, 350, "Press SQUARE to disable anonymous.", buffers[currentBuffer]->ptr);
-			
+			print(100, 320, "Press CROSS to quit the application.", buffers[currentBuffer]->ptr);
+			print(100, 350, (rwflash == 0) ? "Press CIRCLE to mount writable flash." : "Press CIRCLE to unmount writable flash.", buffers[currentBuffer]->ptr);
+			print(100, 380, (disablepass == 0) ? "Press SQUARE to enable anonymous." : "Press SQUARE to disable anonymous.", buffers[currentBuffer]->ptr);
 		}
 		
 		flip(currentBuffer);

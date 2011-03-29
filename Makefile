@@ -10,10 +10,10 @@ BUILD		:=	build
 SOURCE		:=	source
 INCLUDE		:=	include
 DATA		:=	data
-LIBS		:=	-lnet -lsysmodule -lgcm_sys -lreality -lsysutil -lio
+LIBS		:=	-lnet -lsysmodule -lgcm_sys -lreality -lsysutil -lnetctl -lsysfs -lio
 
 TITLE		:=	FTP Server
-APPID		:=	FTPS00000
+APPID		:=	FTPSERVER
 CONTENTID	:=	UP0001-$(APPID)_00-0000000000000000
 PKGFILES	:=	release
 SFOXML		:=	$(CURDIR)/sfo.xml
@@ -57,7 +57,7 @@ export INCLUDES	:=	$(foreach dir,$(INCLUDE),-I$(CURDIR)/$(dir)) \
 
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
-	@make --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 clean:
 	@echo "[RM]  $(notdir $(OUTPUT))"

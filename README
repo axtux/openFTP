@@ -1,5 +1,5 @@
-FTP Server 1.5 is a minimalistic open source File Transfer Protocol ("FTP") server 
-by jjolano for the PlayStation 3. It was written using the PSL1GHT SDK found at 
+FTP Server 2.0 by @jjolano and @Axtux (Axtux.tk) for the PS3.
+It was written using the PSL1GHT SDK found at 
 http://psl1ght.com/ (git: http://github.com/HACKERCHANNEL/PSL1GHT).
 
 Login Details
@@ -10,7 +10,5 @@ Prerequisites:
 	Custom Firmware
 	A network connection
 	Optional: Internet access (optional) for IP address retrieval
-
-Author : @jjolano
 
 Source code: https://github.com/axtux/FtpServer

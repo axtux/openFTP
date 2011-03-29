@@ -34,12 +34,12 @@
 #include "sconsole.h"
 
 #define LISTEN_PORT		21			// the port that OpenPS3FTP will listen for connections on
-#define DEFAULT_USER	"root"		// default username
-#define DEFAULT_PASS	"openbox"	// default password
+#define DEFAULT_USER	"user"		// default username
+#define DEFAULT_PASS	"ps3"	// default password
 
-const char* TITLE	= "OpenPS3FTP";
+const char* TITLE	= "OpenFTP";
 const char* VERSION	= "2.0";
-const char* AUTHOR	= "jjolano and Axtux"; // (bit.ly/gmzGcI) and Axtux (Axtux.tk)";
+const char* AUTHOR	= "@jjolano and @Axtux";
 const char* PASSWD_FILE	= "/dev_hdd0/game/OFTP00001/USRDIR/passwd";
 
 char userpass[64];
@@ -1105,6 +1105,7 @@ int main()
 			print(100, 350, "Press CROSS to quit the application.", buffers[currentBuffer]->ptr);
 			print(100, 380, rwflash ? "Press CIRCLE to unmount writable flash." : "Press CIRCLE to mount writable flash.", buffers[currentBuffer]->ptr);
 			print(100, 410, anonymous ? "Press SQUARE to disable anonymous." : "Press SQUARE to enable anonymous.", buffers[currentBuffer]->ptr);
+			print(50, 510, "Support us : bit.ly/gmzGcI and Axtux.tk", buffers[currentBuffer]->ptr);
 		}
 		
 		flip(currentBuffer);

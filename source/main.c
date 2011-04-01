@@ -48,6 +48,7 @@ char ipport[128];
 int exitapp = 0;
 int xmbopen = 0;
 int anonymous = 0;
+int listall = 0;
 
 typedef struct {
 	int height;
@@ -384,7 +385,7 @@ void opf_clienthandler(u64 arg)
 						{
 							abspath(entry.d_name, cwd, path);
 							
-							if(strcmp(path, "/app_home") == 0 || strcmp(path, "/host_root") == 0)
+							if((strcmp(path, "/app_home") == 0 || strcmp(path, "/host_root") == 0) && listall == 0)
 							{
 								continue;
 							}
@@ -442,7 +443,7 @@ void opf_clienthandler(u64 arg)
 						{
 							abspath(entry.d_name, cwd, path);
 							
-							if(strcmp(path, "/app_home") == 0 || strcmp(path, "/host_root") == 0)
+							if((strcmp(path, "/app_home") == 0 || strcmp(path, "/host_root") == 0) && listall == 0)
 							{
 								continue;
 							}
@@ -511,7 +512,7 @@ void opf_clienthandler(u64 arg)
 					{
 						abspath(entry.d_name, cwd, path);
 						
-						if(strcmp(path, "/app_home") == 0 || strcmp(path, "/host_root") == 0)
+						if((strcmp(path, "/app_home") == 0 || strcmp(path, "/host_root") == 0) && listall == 0)
 						{
 							continue;
 						}
@@ -1067,7 +1068,7 @@ int main()
 							}
 						}
 						
-						sleep(0.5);
+						sleep(1);
 					}
 					if(paddata.BTN_SQUARE)
 					{
@@ -1082,7 +1083,20 @@ int main()
 							strcpy(statustext, "Successfully enabled anonymous.");
 						}
 						
-						sleep(0.5);
+						sleep(1);
+					}
+					if(paddata.BTN_TRIANGLE)
+					{
+						if(listall) //disable listall
+						{
+							listall = 0;
+							strcpy(statustext, "Successfully disabled /app_home and /host_root.");
+						}
+						else //enable listall
+						{
+							listall = 1;
+							strcpy(statustext, "Successfully enabled /app_home and /host_root.");
+						}
 					}
 				}
 			}
@@ -1105,6 +1119,7 @@ int main()
 			print(100, 350, "Press CROSS to quit the application.", buffers[currentBuffer]->ptr);
 			print(100, 380, rwflash ? "Press CIRCLE to unmount writable flash." : "Press CIRCLE to mount writable flash.", buffers[currentBuffer]->ptr);
 			print(100, 410, anonymous ? "Press SQUARE to disable anonymous." : "Press SQUARE to enable anonymous.", buffers[currentBuffer]->ptr);
+			print(100, 440, listall ? "Press TRIANGLE to disable /app_home and /host_root." : "Press TRIANGLE to enable /app_home and /host_root.", buffers[currentBuffer]->ptr);
 			print(50, 510, "Support us : bit.ly/gmzGcI and Axtux.tk", buffers[currentBuffer]->ptr);
 		}
 		

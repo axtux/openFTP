@@ -1026,11 +1026,12 @@ int main()
 				if(padinfo.status[i])
 				{
 					ioPadGetData(i, &paddata);
-					// 
+					
 					if(paddata.BTN_CROSS)
 					{
 						exitapp = 1; //Quit application
 					}
+					
 					if(paddata.BTN_CIRCLE)
 					{
 						if(rwflash) //Unmount dev_rwflash
@@ -1070,6 +1071,7 @@ int main()
 						
 						sleep(1);
 					}
+					
 					if(paddata.BTN_SQUARE)
 					{
 						if(anonymous) //disable anonymous
@@ -1085,18 +1087,21 @@ int main()
 						
 						sleep(1);
 					}
+					
 					if(paddata.BTN_TRIANGLE)
 					{
 						if(listall) //disable listall
 						{
 							listall = 0;
-							strcpy(statustext, "Successfully disabled /app_home and /host_root.");
+							strcpy(statustext, "Successfully disabled \"list all\".");
 						}
 						else //enable listall
 						{
 							listall = 1;
-							strcpy(statustext, "Successfully enabled /app_home and /host_root.");
+							strcpy(statustext, "Successfully enabled \"list all\".");
 						}
+						
+						sleep(1);
 					}
 				}
 			}
@@ -1119,7 +1124,7 @@ int main()
 			print(100, 350, "Press CROSS to quit the application.", buffers[currentBuffer]->ptr);
 			print(100, 380, rwflash ? "Press CIRCLE to unmount writable flash." : "Press CIRCLE to mount writable flash.", buffers[currentBuffer]->ptr);
 			print(100, 410, anonymous ? "Press SQUARE to disable anonymous." : "Press SQUARE to enable anonymous.", buffers[currentBuffer]->ptr);
-			print(100, 440, listall ? "Press TRIANGLE to disable /app_home and /host_root." : "Press TRIANGLE to enable /app_home and /host_root.", buffers[currentBuffer]->ptr);
+			print(100, 440, listall ? "Press TRIANGLE to disable \"list all\"." : "Press TRIANGLE to enable \"list all\".", buffers[currentBuffer]->ptr);
 			print(50, 510, "Support us : bit.ly/gmzGcI and Axtux.tk", buffers[currentBuffer]->ptr);
 		}
 		
